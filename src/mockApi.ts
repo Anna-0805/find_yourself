@@ -69,5 +69,8 @@ export const api = {
     return fakeFetch<Vacancy[]>(filtered);
   },
  
-  submitApplication: () => fakeFetch<{ success: boolean }>({ success: true })
-};
+  submitApplication: (data: { name: string; contact: string; message: string }) => {
+    console.log("Відправлено на сервер:", data);
+    return fakeFetch<{ success: boolean }>({ success: true });
+  }
+}
