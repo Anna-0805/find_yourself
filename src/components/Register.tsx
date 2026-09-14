@@ -1,4 +1,5 @@
-import { useState, FormEvent } from 'react';
+import { useState } from 'react';
+import type { SyntheticEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -13,7 +14,7 @@ export default function Register() {
   const { login } = useAuth(); // Або функція реєстрації з контексту, якщо ви її додали
   const navigate = useNavigate();
 
-  const handleRegister = async (e: FormEvent) => {
+  const handleRegister = async (e: SyntheticEvent<HTMLFormElement>) => {
   e.preventDefault();
   setError('');
 

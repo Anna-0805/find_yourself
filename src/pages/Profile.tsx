@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type SyntheticEvent } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -36,7 +36,7 @@ export default function Profile() {
     navigate('/');
   };
 
-  const handleCreateVacancy = (e: FormEvent) => {
+  const handleCreateVacancy = (e: SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!companyName || !vacancyTitle || !vacancySalary || !recruiterContact) return;
 
@@ -51,7 +51,7 @@ export default function Profile() {
     setTimeout(() => setIsVacancyCreated(false), 4000);
   };
 
-  const handleSaveResume = (e: FormEvent) => {
+  const handleSaveResume = (e: SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!resumeTitle || !resumePhone) return;
 
@@ -186,7 +186,6 @@ export default function Profile() {
         </div>
       )}
 
-      {/* --- КАБІНЕТ ШУКАЧА --- */}
       {user?.role === 'candidate' && (
         <div className="bg-white border border-slate-200 p-8 rounded-3xl shadow-sm space-y-6">
           {savedResume && !isEditingResume ? (
