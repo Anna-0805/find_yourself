@@ -1,4 +1,4 @@
-const API_URL = 'https://find-yourself-2szr.onrender.com/api';
+import { API_URL } from './constants';
 
 export async function loginUser(email: string, password: string) {
   const response = await fetch(`${API_URL}/login`, {
