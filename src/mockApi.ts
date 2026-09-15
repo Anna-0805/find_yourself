@@ -20,13 +20,13 @@ const MOCK_PARTNERS: Record<string, PartnerData> = {
     name: "EU Delivery Logistics",
     slug: "eu-delivery",
     description: "Ведуча логистічна компанія, яка забезпечує доставку вантажів по всій Центральній и Західній Європі.",
-    logo: "🚚"
+    logo: "/delivery.png"
   },
   "nordic-build": {
     name: "Nordic Build Group",
     slug: "nordic-build",
     description: "Скандинавська будівельна компанія, що спеціалізується на будівництві еко-житла та інфраструктурних об'єктах.",
-    logo: "🏗️"
+    logo: "/architectural.svg"
   }
 };
 

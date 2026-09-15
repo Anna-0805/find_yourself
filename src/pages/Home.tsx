@@ -36,7 +36,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Секція категорій */}
       <section className="space-y-6">
         <div className="text-center space-y-2">
           <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">Популярні категорії</h2>
@@ -44,18 +43,33 @@ export default function Home() {
         </div>
         
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4">
-          {CATEGORIES.map((category) => (
-            <button
-              key={category.id}
-              onClick={() => handleCategoryClick(category.name)}
-              className="flex flex-col items-center justify-center p-5 bg-white border border-slate-200 hover:border-blue-500 hover:shadow-md rounded-2xl transition-all group active:scale-95 text-center space-y-3 cursor-pointer"
-            >
-              <span className="text-3xl group-hover:scale-110 transition-transform">{category.icon}</span>
-              <span className="text-sm font-semibold text-slate-700 group-hover:text-blue-600 transition-colors">
-                {category.name}
-              </span>
-            </button>
-          ))}
+          {CATEGORIES.map((category) => {
+            const isImgFile = category.icon.includes('.') || category.icon.startsWith('/');
+
+            return (
+              <button
+                key={category.id}
+                onClick={() => handleCategoryClick(category.name)}
+                className="flex flex-col items-center justify-center p-5 bg-white border border-slate-200 hover:border-blue-500 hover:shadow-md rounded-2xl transition-all group active:scale-95 text-center space-y-3 cursor-pointer h-full"
+              >
+                <div className="h-10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  {isImgFile ? (
+                    <img 
+                      src={category.icon} 
+                      alt={category.name} 
+                      className="w-10 h-10 object-contain" 
+                    />
+                  ) : (
+                    <span className="text-3xl">{category.icon}</span>
+                  )}
+                </div>
+
+                <span className="text-sm font-semibold text-slate-700 group-hover:text-blue-600 transition-colors line-clamp-2">
+                  {category.name}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </section>
 

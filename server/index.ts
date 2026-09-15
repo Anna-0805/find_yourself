@@ -123,7 +123,7 @@ app.post('/api/register', async (req, res) => {
           <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
             <h2 style="color: #2563eb;">Вітаємо на платформі VV Work!</h2>
             <p>Ви успішно зареєструвалися як <b>${role === 'employer' ? 'Роботодавець' : 'Кандидат'}</b>.</p>
-            <p>Ваш логін для vходу: <b>${email}</b></p>
+            <p>Ваш логін для входу: <b>${email}</b></p>
           </div>
         `,
       }),

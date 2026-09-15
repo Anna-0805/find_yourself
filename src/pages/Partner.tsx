@@ -128,7 +128,21 @@ export default function Partner() {
       
       {partner && (
         <div className="bg-white border border-slate-200 p-6 sm:p-8 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center gap-5 shadow-sm">
-          <div className="text-4xl p-4 bg-blue-50 rounded-2xl">{partner.logo}</div>
+          <div className="text-4xl p-4 bg-blue-50 rounded-2xl">
+            <div className="p-4 bg-blue-50 rounded-2xl flex items-center justify-center h-20 w-20 min-w-[80px]">
+              {partner && (partner.logo.includes('.') || partner.logo.startsWith('/')) ? (
+
+                <img 
+                  src={partner.logo} 
+                  alt={partner.name} 
+                  className="w-12 h-12 object-contain" 
+                />
+              ) : (
+   
+               <span className="text-4xl">{partner?.logo}</span>
+             )}
+            </div>
+          </div>
           <div className="space-y-1">
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">{partner.name}</h1>
             <p className="text-slate-500 max-w-2xl text-sm sm:text-base">{partner.description}</p>
