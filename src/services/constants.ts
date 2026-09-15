@@ -1,4 +1,6 @@
-export const API_REGISTER_URL = 'https://find-yourself-2szr.onrender.com';
+export const API_URL = 'https://find-yourself-2szr.onrender.com';
+
+export const API_REGISTER_URL = `${API_URL}/register`;
 
 export const LOCAL_CATEGORIES = ["Все", "Будівництво", "Виробництво", "Логістика", "Готельно-ресторанна сфера", "IT", "Водії"];
 
