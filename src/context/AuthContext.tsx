@@ -33,7 +33,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     const userData: User = {
-      name: role === 'employer' ? 'Роботодавець ЄС' : 'Кандидат',
+      name: role === 'employer' ? 'Роботодавець' : 'Кандидат',
       email,
       role,
     };
