@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import type { Vacancy } from "../mockApi";
+import type { Vacancy } from "../mockApi"
+import { API_URL } from "../services/constants"; 
 
 export interface ApplyModalProps {
   vacancy: Vacancy | null;
   isOpen: boolean;
   onClose: () => void;
 }
-
 
 export default function ApplyModal({ vacancy, isOpen, onClose }: ApplyModalProps) {
   const [coverLetter, setCoverLetter] = useState("");
@@ -16,12 +16,25 @@ export default function ApplyModal({ vacancy, isOpen, onClose }: ApplyModalProps
 
   if (!isOpen || !vacancy) return null;
 
-  const handleSubmitApplication = (e: React.FormEvent) => {
+  const handleSubmitApplication = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      const response = await fetch(`${API_URL}/applications`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          vacancyTitle: vacancy.title,
+          coverLetter: coverLetter,
+          resumeName: resumeFile ? resumeFile.name : "Резюме.pdf"
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Не вдалося зберегти відгук на сервері");
+      }
+
       setSuccessMessage(true);
       
       setTimeout(() => {
@@ -30,14 +43,18 @@ export default function ApplyModal({ vacancy, isOpen, onClose }: ApplyModalProps
         setCoverLetter("");
         setResumeFile(null);
       }, 2000);
-    }, 1000);
+    } catch (err) {
+      console.error("Помилка відправки відгуку:", err);
+      alert("Не вдалося надіслати відгук. Перевірте зʼєднання з сервером.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-2xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative space-y-6 animate-fadeIn">
         
-        {/* Кнопка закриття */}
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-xl font-bold w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 transition-all cursor-pointer"

@@ -63,6 +63,37 @@ app.post('/api/vacancies', (req, res) => {
 });
 
 
+const applications: Array<{
+  id: string;
+  vacancyTitle: string;
+  coverLetter: string;
+  resumeName: string;
+  createdAt: string;
+}> = [];
+
+app.post('/api/applications', (req, res) => {
+  const { vacancyTitle, coverLetter, resumeName } = req.body;
+
+  if (!vacancyTitle) {
+    return res.status(400).json({ success: false, message: 'Назва вакансії обовʼязкова!' });
+  }
+
+  const newApplication = {
+    id: String(applications.length + 1),
+    vacancyTitle,
+    coverLetter: coverLetter || 'Без супровідного листа',
+    resumeName: resumeName || 'resume.pdf',
+    createdAt: new Date().toLocaleString('uk-UA')
+  };
+
+  applications.unshift(newApplication); 
+  res.status(201).json({ success: true, application: newApplication, message: 'Відгук успішно збережено на сервері!' });
+});
+
+app.get('/api/applications', (req, res) => {
+  res.status(200).json({ success: true, applications });
+});
+
 app.post('/api/register', async (req, res) => {
   const { email, password, role } = req.body;
 
@@ -92,7 +123,7 @@ app.post('/api/register', async (req, res) => {
           <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
             <h2 style="color: #2563eb;">Вітаємо на платформі VV Work!</h2>
             <p>Ви успішно зареєструвалися як <b>${role === 'employer' ? 'Роботодавець' : 'Кандидат'}</b>.</p>
-            <p>Ваш логін для входу: <b>${email}</b></p>
+            <p>Ваш логін для vходу: <b>${email}</b></p>
           </div>
         `,
       }),
@@ -184,10 +215,11 @@ app.post('/api/change-password', (req, res) => {
   }
 
   user.password = newPassword;
-  res.status(200).json({ success: true, message: 'Пароль успешно изменено!' });
+  res.status(200).json({ success: true, message: 'Пароль успішно змінено!' });
 });
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Сервер запущено на порту ${PORT}`);
+  console.log(`Сервер запустищено на порту ${PORT}`);
 });
