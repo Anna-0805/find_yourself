@@ -1,7 +1,7 @@
 import type { Vacancy } from "../mockApi";
 
 interface VacancyCardProps {
-  vacancy: Vacancy;
+  vacancy: Vacancy & { country?: string }; 
   onApply: (vacancy: Vacancy) => void;
 }
 
@@ -16,9 +16,11 @@ export default function VacancyCard({ vacancy, onApply }: VacancyCardProps) {
           {vacancy.title}
         </h3>
         <div className="flex items-center gap-2 text-xs text-slate-400">
-          <span>📍 {vacancy.location}</span>
+          <span>📍 {vacancy.location || vacancy.country || 'Країни ЄС'}</span>
         </div>
-        <p className="text-slate-500 text-sm line-clamp-2 pt-1">{vacancy.description}</p>
+        <p className="text-slate-500 text-sm line-clamp-2 pt-1">
+          {vacancy.description || 'Опис вакансії відсутній.'}
+        </p>
       </div>
 
       <div className="flex justify-between items-center pt-4 border-t border-slate-100">

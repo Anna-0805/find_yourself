@@ -5,7 +5,7 @@ import type { Vacancy, PartnerData } from "../mockApi";
 import SkeletonCard from "../components/SkeletonCard";
 import ErrorRetry from "../components/ErrorRetry";
 import ApplyModal from "../components/ApplyModal";
-import { LOCAL_CATEGORIES } from "../services/constants";
+import { LOCAL_CATEGORIES, API_URL } from "../services/constants";
 import VacancyCard from "../components/VacancyCard";
 
 export default function Partner() {
@@ -45,20 +45,39 @@ export default function Partner() {
       }
       
       try {
-        const [partnerData, vacanciesData] = await Promise.all([
-          api.getPartner(slug),
-          api.getVacanciesByPartner(slug),
-        ]);
+        const partnerData = await api.getPartner(slug);
         if (isMounted) {
           setPartner(partnerData);
-          setVacancies(vacanciesData);
+        }
+
+        const response = await fetch(`${API_URL}/vacancies`);
+        if (!response.ok) throw new Error("Не вдалося отримати свіжі вакансії з сервера");
+        
+        const data = await response.json();
+        
+        if (isMounted) {
+          if (data.success && data.vacancies && data.vacancies.length > 0) {
+            setVacancies(data.vacancies);
+          } else {
+            const vacanciesMock = await api.getVacanciesByPartner(slug);
+            setVacancies(vacanciesMock);
+          }
           setLoading(false);
         }
       } catch (err: unknown) {
-        if (isMounted) {
-          const errorInstance = err as Error;
-          setError(errorInstance.message || "Не вдалося завантажити дані.");
-          setLoading(false);
+        console.log("Бекенд тимчасово недоступний, активовано режим мокових даних:", err);
+        try {
+          const vacanciesMock = await api.getVacanciesByPartner(slug);
+          if (isMounted) {
+            setVacancies(vacanciesMock);
+            setLoading(false);
+          }
+        } catch (mockErr) {
+          if (isMounted) {
+            const errorInstance = mockErr as Error;
+            setError(errorInstance.message || "Не вдалося завантажити дані.");
+            setLoading(false);
+          }
         }
       }
     };
