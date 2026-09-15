@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { api } from "../mockApi";
+import { validateField } from "../utils/validation";
 
 interface FormData {
   name: string;
@@ -19,37 +20,6 @@ export default function Contacts() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<"idle" | "optimistic_success" | "final_success" | "error">("idle");
   const [networkError, setNetworkError] = useState<string | null>(null);
-
-  const validateField = (name: string, value: string): string => {
-    let errorMsg = "";
-    
-    if (name === "name") {
-      if (!value.trim()) errorMsg = "Ім'я є обов'язковим для заповнення";
-      else if (value.trim().length < 2) errorMsg = "Ім'я повинно містити мінімум 2 символи";
-    }
-    
-    if (name === "contact") {
-      if (!value.trim()) {
-        errorMsg = "Вкажіть телефон або Telegram для зв'язку";
-      } else {
-        const phoneRegex = /^(\+?\d{1,4}?[\s-]?)?\(?\d{2,3}?\)?[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}$/;
-        const telegramRegex = /^@[a-zA-Z0-9_]{4,32}$/;
-        
-        const isPhone = phoneRegex.test(value.trim());
-        const isTg = telegramRegex.test(value.trim());
-        
-        if (!isPhone && !isTg) {
-          errorMsg = "Введіть коректний номер телефону або Telegram-нік (починаючи з @)";
-        }
-      }
-    }
-    
-    if (name === "message") {
-      if (value.length > 500) errorMsg = "Повідомлення не може перевищувати 500 символів";
-    }
-
-    return errorMsg;
-  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -76,14 +46,14 @@ export default function Contacts() {
     setSubmitStatus("optimistic_success"); 
     
     const savedFormData = { ...formData }; 
-   
     setFormData({ name: "", contact: "", message: "" }); 
 
     try {
       await api.submitApplication(savedFormData);
       setSubmitStatus("final_success");
-    } catch (err: any) {
-      setNetworkError(err.message || "Сталася помилка при відправці. Спробуйте ще раз.");
+    } catch (err: unknown) {
+      const errorInstance = err as Error;
+      setNetworkError(errorInstance.message || "Сталася помилка при відправці. Спробуйте ще раз.");
       setSubmitStatus("error");
       setFormData(savedFormData); 
     } finally {

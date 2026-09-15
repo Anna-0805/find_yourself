@@ -1,20 +1,20 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import { createContext, useState, useEffect, type ReactNode } from 'react';
 
-interface User {
+export interface User {
   name: string;
   email: string;
   role: 'candidate' | 'employer';
 }
 
-interface AuthContextType {
+export interface AuthContextType {
   user: User | null;
   login: (email: string, password: string, role: 'candidate' | 'employer') => boolean;
   logout: () => void;
   isAuthenticated: boolean;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(() => {
@@ -32,7 +32,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = (email: string, password: string, role: 'candidate' | 'employer') => {
     if (password.length < 6) {
-      alert('Пароль має містити щонайменше 6 символів!');
       return false;
     }
 
@@ -51,12 +50,4 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       {children}
     </AuthContext.Provider>
   );
-}
-
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
 }

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuth';
+import { loginUser, requestPasswordReset } from '../services/authService';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -20,19 +21,12 @@ export default function Login() {
     setMessage('');
 
     try {
-      const response = await fetch('http://localhost:5000/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message || 'Помилка входу');
-
+      const data = await loginUser(email, password);
       login(data.user.email, password, data.user.role);
       navigate('/profile');
-    } catch (err: any) {
-      setError(err.message || 'Не вдалося увійти');
+    } catch (err: unknown) {
+      const errorIntance = err as Error;
+      setError(errorIntance.message || 'Не вдалося увійти');
     }
   };
 
@@ -42,22 +36,15 @@ export default function Login() {
     setMessage('');
 
     try {
-      const response = await fetch('http://localhost:5000/api/forgot-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: forgotEmail }),
-      });
-
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message || 'Помилка');
-
+      await requestPasswordReset(forgotEmail);
       setMessage('Тимчасовий пароль успішно надіслано на вашу пошту!');
       setTimeout(() => {
         setIsForgotMode(false);
         setEmail(forgotEmail);
       }, 3000);
-    } catch (err: any) {
-      setError(err.message || 'Сталася помилка');
+    } catch (err: unknown) {
+      const errorInstance = err as Error;
+      setError(errorInstance.message || 'Сталася помилка');
     }
   };
 

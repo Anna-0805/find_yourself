@@ -7,7 +7,12 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: 'https://find-yourself-pied.vercel.app',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 const users: Array<{ email: string; password: string; role: string }> = [];
 
@@ -18,7 +23,6 @@ const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASS,
   },
 });
-
 
 app.post('/api/register', async (req, res) => {
   const { email, password, role } = req.body;
@@ -51,7 +55,8 @@ app.post('/api/register', async (req, res) => {
     await transporter.sendMail(mailOptions);
     res.status(201).json({ success: true, message: 'Користувача зареєстровано, лист надіслано!' });
   } catch (error: unknown) {
-    res.status(500).json({ success: false, message: 'Помилка при відправці листа, але реєстрацію збережено.' });
+    console.log("Попередження SMTP (реєстрація):", error);
+    res.status(201).json({ success: true, message: 'Користувача зареєстровано (режим без пошти)!' });
   }
 });
 
@@ -73,7 +78,6 @@ app.post('/api/login', (req, res) => {
     message: 'Успішний вхід!' 
   });
 });
-
 
 app.post('/api/forgot-password', async (req, res) => {
   const { email } = req.body;
@@ -104,7 +108,12 @@ app.post('/api/forgot-password', async (req, res) => {
     await transporter.sendMail(mailOptions);
     res.status(200).json({ success: true, message: 'Тимчасовий пароль надіслано на вашу пошту!' });
   } catch (error: unknown) {
-    res.status(500).json({ success: false, message: 'Не вдалося надіслати лист. Спробуйте пізніше.' });
+   
+    console.log("Попередження SMTP (відновлення):", error);
+    res.status(200).json({ 
+      success: true, 
+      message: `Не вдалося відправити лист. Ваш тимчасовий пароль для входу: ${tempPassword}` 
+    });
   }
 });
 

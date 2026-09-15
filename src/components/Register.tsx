@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import type { SyntheticEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuth';
+import { API_REGISTER_URL } from '../services/constants';
+
 
 export default function Register() {
   const [email, setEmail] = useState('');
@@ -11,46 +13,48 @@ export default function Register() {
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState(false);
   
-  const { login } = useAuth(); // Або функція реєстрації з контексту, якщо ви її додали
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleRegister = async (e: SyntheticEvent<HTMLFormElement>) => {
-  e.preventDefault();
-  setError('');
+    e.preventDefault();
+    setError('');
 
-  if (password !== confirmPassword) {
-    setError('Паролі не співпадають!');
-    return;
-  }
-
-  try {
-    const response = await fetch('http://localhost:5000/api/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password, role }),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.message || 'Помилка реєстрації');
+    if (password !== confirmPassword) {
+      setError('Паролі не співпадають!');
+      return;
     }
 
-    setSuccessMessage(true);
+    try {
+      const response = await fetch(API_REGISTER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, role }),
+      });
 
-    setTimeout(() => {
-      login(email, password, role); // Автоматичний вхід у контекст
-      navigate('/profile');
-    }, 3000);
+      const data = await response.json();
 
-  } catch (err: any) {
-    setError(err.message || 'Не вдалося підключитися до сервера');
-  }
-};
+      if (!response.ok) {
+        throw new Error(data.message || 'Помилка реєстрації');
+      }
+
+      setSuccessMessage(true);
+
+      setTimeout(() => {
+        login(email, password, role);
+        navigate('/profile');
+      }, 3000);
+
+    } catch (err: unknown) {
+      const errorInstance = err as Error;
+      setError(errorInstance.message || 'Не вдалося підключитися до сервера');
+    }
+  };
 
   return (
     <div className="max-w-md mx-auto py-16 px-4">
       <div className="bg-white border border-slate-200 p-8 rounded-3xl shadow-sm space-y-6">
+        
         <div className="text-center space-y-2">
           <h1 className="text-2xl font-bold text-slate-900">Реєстрація у VV Work</h1>
           <p className="text-sm text-slate-500">Створіть акаунт для пошуку роботи чи працівників</p>
@@ -71,6 +75,7 @@ export default function Register() {
           </div>
         ) : (
           <form onSubmit={handleRegister} className="space-y-4">
+            
             <div className="space-y-1">
               <label className="text-xs font-semibold text-slate-700">Email</label>
               <input
@@ -110,28 +115,20 @@ export default function Register() {
             <div className="space-y-1">
               <label className="text-xs font-semibold text-slate-700">Ким ви реєструєтесь?</label>
               <div className="grid grid-cols-2 gap-3">
-                <button
-                  type="button"
-                  onClick={() => setRole('candidate')}
-                  className={`py-2.5 text-xs font-semibold rounded-xl border transition-all cursor-pointer ${
-                    role === 'candidate'
-                      ? 'bg-blue-600 border-blue-600 text-white shadow-sm'
-                      : 'bg-slate-50 border-slate-200 text-slate-600'
-                  }`}
-                >
-                  Кандидат
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setRole('employer')}
-                  className={`py-2.5 text-xs font-semibold rounded-xl border transition-all cursor-pointer ${
-                    role === 'employer'
-                      ? 'bg-blue-600 border-blue-600 text-white shadow-sm'
-                      : 'bg-slate-50 border-slate-200 text-slate-600'
-                  }`}
-                >
-                  Роботодавець
-                </button>
+                {(['candidate', 'employer'] as const).map((r) => (
+                  <button
+                    key={r}
+                    type="button"
+                    onClick={() => setRole(r)}
+                    className={`py-2.5 text-xs font-semibold rounded-xl border transition-all cursor-pointer ${
+                      role === r
+                        ? 'bg-blue-600 border-blue-600 text-white shadow-sm'
+                        : 'bg-slate-50 border-slate-200 text-slate-600'
+                    }`}
+                  >
+                    {r === 'candidate' ? 'Кандидат' : 'Роботодавець'}
+                  </button>
+                ))}
               </div>
             </div>
 
@@ -150,6 +147,7 @@ export default function Register() {
             Увійти
           </Link>
         </div>
+
       </div>
     </div>
   );

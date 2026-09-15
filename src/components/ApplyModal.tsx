@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import type { Vacancy } from "../mockApi";
 
-interface ApplyModalProps {
+export interface ApplyModalProps {
   vacancy: Vacancy | null;
   isOpen: boolean;
   onClose: () => void;
 }
+
 
 export default function ApplyModal({ vacancy, isOpen, onClose }: ApplyModalProps) {
   const [coverLetter, setCoverLetter] = useState("");
@@ -73,10 +74,16 @@ export default function ApplyModal({ vacancy, isOpen, onClose }: ApplyModalProps
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-sm font-semibold text-slate-700">Супровідний лист</label>
-              <textarea
+              <div className="flex justify-between items-center">
+                <label className="text-sm font-semibold text-slate-700">Супровідний лист</label>
+                <span className={`text-xs ${coverLetter.length >= 500 ? "text-red-500 font-bold" : "text-slate-400"}`}>
+                  {coverLetter.length}/500
+                </span>
+              </div>
+                <textarea
                 rows={4}
                 value={coverLetter}
+                maxLength={500}
                 onChange={(e) => setCoverLetter(e.target.value)}
                 placeholder="Коротко розкажіть, чому саме ви підходите на цю позицію..."
                 className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 focus:bg-white text-sm resize-none transition-all"

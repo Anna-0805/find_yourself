@@ -1,15 +1,5 @@
 import { useNavigate } from "react-router-dom";
-
-// Список популярных категорий из ТЗ
-const CATEGORIES = [
-  { id: "building", name: "Будівництво", icon: "🏗️" },
-  { id: "production", name: "Виробництво", icon: "🏭" },
-  { id: "logistics", name: "Логістика", icon: "📦" },
-  { id: "horeca", name: "Готельно-ресторанна сфера", icon: "🏨" },
-  { id: "it", name: "IT", icon: "💻" },
-  { id: "drivers", name: "Водії", icon: "🚚" },
-  { id: "others", name: "Інші", icon: "💼" },
-];
+import { CATEGORIES } from "../services/constants";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -21,6 +11,7 @@ export default function Home() {
   return (
     <div className="space-y-20 pb-20">
       
+      {/* Головний банер (Hero Section) */}
       <section className="text-center pt-16 pb-12 space-y-6 max-w-3xl mx-auto">
         <h1 className="text-4xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
           Знайди роботу. Знайди працівника. <br />
@@ -45,6 +36,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Секція категорій */}
       <section className="space-y-6">
         <div className="text-center space-y-2">
           <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">Популярні категорії</h2>
@@ -67,6 +59,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Секція для роботодавців */}
       <section 
         id="for-employers" 
         className="bg-gradient-to-br from-slate-900 via-slate-800 to-blue-950 text-white rounded-3xl p-8 sm:p-12 shadow-xl relative overflow-hidden"

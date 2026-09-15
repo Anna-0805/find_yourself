@@ -2,8 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { useState, useEffect } from 'react';
 
-// --- 1. ТЕСТИРОВАНИЕ ЛОГИКИ ВАЛИДАЦИИ ФОРМЫ ---
-// Фрагмент изолированной функции валидации с нашей страницы Contacts.tsx
 const validateField = (name: string, value: string): string => {
   if (name === 'name') {
     if (!value.trim()) return "Ім'я є обов'язковим для заповнення";
@@ -20,73 +18,69 @@ const validateField = (name: string, value: string): string => {
   return "";
 };
 
-describe('Логіка інлайн-валідації форми контактів', () => {
-  it('должен возвращать ошибку, если имя слишком короткое', () => {
+describe("Логіка інлайн-валідації форми контактів", () => {
+  it("повинен повертати помилку, якщо і'мя занадто коротке", () => {
     const error = validateField('name', 'A');
     expect(error).toBe("Ім'я повинно містити мінімум 2 символи");
   });
 
-  it('должен пропускать валидное имя', () => {
+  it("повинен пропускати валідне і'мя", () => {
     const error = validateField('name', 'VV Work User');
     expect(error).toBe("");
   });
 
-  it('должен возвращать ошибку для некорректного формата контакта', () => {
+  it("повинен повертати помилку для некоректного формату контакту", () => {
     const error = validateField('contact', 'not-a-phone-or-tg');
     expect(error).toBe("Введіть коректний номер телефону або Telegram-нік (починаючи з @)");
   });
 
-  it('должен успешно валидировать правильный телефон и Telegram', () => {
+  it("повинен успешно валідувати правильний телефон и Telegram", () => {
     expect(validateField('contact', '+380931234567')).toBe("");
     expect(validateField('contact', '@vv_worker')).toBe("");
   });
 });
 
 
-// --- 2. ТЕСТИРОВАНИЕ РУЧНОГО DEBOUNCE (Без библиотек) ---
-// Тестовый мини-компонент, имитирующий логику поиска на странице Partner.tsx
+
 function DebounceSearchTester({ onSearch }: { onSearch: (val: string) => void }) {
   const [input, setInput] = useState("");
   
   useEffect(() => {
     const handler = setTimeout(() => {
       onSearch(input);
-    }, 400); // 400мс задержка из нашего ТЗ
+    }, 400);
     return () => clearTimeout(handler);
   }, [input, onSearch]);
 
   return <input data-testid="search-input" value={input} onChange={(e) => setInput(e.target.value)} />;
 }
 
-describe('Кастомна логіка ручного Debounce пошуку', () => {
+describe("Кастомна логіка ручного Debounce пошуку", () => {
   beforeEach(() => {
-    vi.useFakeTimers(); // Включаем фейковые таймеры, чтобы контролировать время в тесте
+    vi.useFakeTimers();
   });
 
-  it('не должен вызывать функцию поиска мгновенно при вводе букв', async () => {
+  it("не повинен викликати функцію пошуку миттєво при введенні літер", async () => {
     const searchMock = vi.fn();
     render(<DebounceSearchTester onSearch={searchMock} />);
     
     const input = screen.getByTestId('search-input');
      fireEvent.change(input, { target: { value: 'Водій' } });
 
-    // Функция НЕ должна быть вызвана сразу, так как 400мс еще не прошло
     expect(searchMock).not.toHaveBeenCalledWith('Водій');
   });
 
-  it('должен вызвать функцию поиска ровно один раз после паузы в 400мс', async () => {
+  it("повинен викликати функцію пошуку рівно один раз після паузи в 400мс", async () => {
     const searchMock = vi.fn();
     render(<DebounceSearchTester onSearch={searchMock} />);
     
     const input = screen.getByTestId('search-input');
     fireEvent.change(input, { target: { value: 'Водій' } });
 
-    // Перематываем время на 400мс вперед
     act(() => {
       vi.advanceTimersByTime(400);
     });
 
-    // Теперь функция должна успешно отработать
     expect(searchMock).toHaveBeenCalledTimes(1);
     expect(searchMock).toHaveBeenCalledWith('Водій');
   });

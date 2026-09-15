@@ -1,12 +1,12 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { api } from "../mockApi";
 import type { Vacancy, PartnerData } from "../mockApi";
 import SkeletonCard from "../components/SkeletonCard";
 import ErrorRetry from "../components/ErrorRetry";
-import ApplyModal from "../components/ApplyModal"; // <--- Імпортуємо модалку
-
-const LOCAL_CATEGORIES = ["Все", "Будівництво", "Виробництво", "Логістика", "Готельно-ресторанна сфера", "IT", "Водії"];
+import ApplyModal from "../components/ApplyModal";
+import { LOCAL_CATEGORIES } from "../services/constants";
+import VacancyCard from "../components/VacancyCard";
 
 export default function Partner() {
   const { slug } = useParams<{ slug: string }>();
@@ -17,7 +17,8 @@ export default function Partner() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Лише стан активної вакансії для модалки
+  const [retryTrigger, setRetryTrigger] = useState(0); 
+
   const [activeVacancy, setActiveVacancy] = useState<Vacancy | null>(null);
 
   const currentCategory = searchParams.get("category") || "Все";
@@ -32,27 +33,41 @@ export default function Partner() {
     return () => clearTimeout(handler); 
   }, [searchInputValue]);
 
-  const loadPageData = useCallback(async () => {
-    if (!slug) return;
-    setLoading(true);
-    setError(null);
-    try {
-      const [partnerData, vacanciesData] = await Promise.all([
-        api.getPartner(slug),
-        api.getVacanciesByPartner(slug),
-      ]);
-      setPartner(partnerData);
-      setVacancies(vacanciesData);
-    } catch (err: any) {
-      setError(err.message || "Не вдалося завантажити дані.");
-    } finally {
-      setLoading(false);
-    }
-  }, [slug]);
-
   useEffect(() => {
-    loadPageData();
-  }, [loadPageData]);
+    let isMounted = true;
+
+    const fetchData = async () => {
+      if (!slug) return;
+
+       if (isMounted) {
+        setLoading(true); 
+        setError(null);
+      }
+      
+      try {
+        const [partnerData, vacanciesData] = await Promise.all([
+          api.getPartner(slug),
+          api.getVacanciesByPartner(slug),
+        ]);
+        if (isMounted) {
+          setPartner(partnerData);
+          setVacancies(vacanciesData);
+          setLoading(false);
+        }
+      } catch (err: unknown) {
+        if (isMounted) {
+          const errorInstance = err as Error;
+          setError(errorInstance.message || "Не вдалося завантажити дані.");
+          setLoading(false);
+        }
+      }
+    };
+    fetchData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [slug, retryTrigger]);
 
   const filteredVacancies = useMemo(() => {
     return vacancies.filter((vacancy) => {
@@ -74,7 +89,7 @@ export default function Partner() {
 
   if (loading) {
     return (
-      <div className="py-12 space-y-8 animate-pulse">
+      <div className="py-12 max-w-7xl mx-auto space-y-8 animate-pulse">
         <div className="h-10 bg-slate-200 rounded-xl w-1/3 mb-6"></div>
         <div className="h-12 bg-slate-200 rounded-xl w-full"></div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -86,7 +101,7 @@ export default function Partner() {
   }
 
   if (error) {
-    return <ErrorRetry message={error} onRetry={loadPageData} />;
+    return <ErrorRetry message={error} onRetry={() => setRetryTrigger((prev) => prev + 1)} />;
   }
 
   return (
@@ -164,36 +179,11 @@ export default function Partner() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {filteredVacancies.map((vacancy) => (
-              <div 
+              <VacancyCard
                 key={vacancy.id} 
-                className="bg-white border border-slate-200 hover:border-blue-500 hover:shadow-md rounded-2xl p-6 transition-all flex flex-col justify-between space-y-4 group"
-              >
-                <div className="space-y-2">
-                  <span className="inline-block px-2.5 py-1 bg-slate-100 text-slate-600 rounded-lg text-xs font-medium">
-                    {vacancy.category}
-                  </span>
-                  <h3 className="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors">
-                    {vacancy.title}
-                  </h3>
-                  <div className="flex items-center gap-2 text-xs text-slate-400">
-                    <span>📍 {vacancy.location}</span>
-                  </div>
-                  <p className="text-slate-500 text-sm line-clamp-2 pt-1">{vacancy.description}</p>
-                </div>
-
-                <div className="flex justify-between items-center pt-4 border-t border-slate-100">
-                  <div className="space-y-0.5">
-                    <span className="text-xs text-slate-400 block font-medium">Заробітна плата</span>
-                    <span className="text-base font-bold text-blue-600">{vacancy.salary}</span>
-                  </div>
-                  <button 
-                    onClick={() => setActiveVacancy(vacancy)}
-                    className="px-4 py-2 bg-slate-900 hover:bg-blue-600 text-white font-medium text-xs rounded-xl transition-all cursor-pointer"
-                  >
-                    Відгукнутися
-                  </button>
-                </div>
-              </div>
+                vacancy={vacancy} 
+                onApply={setActiveVacancy} 
+              />
             ))}
           </div>
         )}
