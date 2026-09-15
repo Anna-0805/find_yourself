@@ -8,13 +8,60 @@ const app = express();
 app.use(express.json());
 
 app.use(cors({
-  origin: 'https://find-yourself-pied.vercel.app',
+  origin: true, 
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 const users: Array<{ email: string; password: string; role: string }> = [];
+
+const vacancies = [
+  {
+    id: "1",
+    title: "Водій міжнародних рейсів (СЕ)",
+    category: "Водії",
+    salary: "2200 - 2800 €",
+    country: "Польща, Німеччина",
+    company: "TransEU Logis",
+    description: "Потрібен водій категорії СЕ для роботи на нових тягачах Euro 6. Офіційне працевлаштування."
+  },
+  {
+    id: "2",
+    title: "QA Automation Engineer (TypeScript)",
+    category: "IT",
+    salary: "3500 - 4500 €",
+    country: "Дистанційно (ЄС)",
+    company: "TechSolutions Europe",
+    description: "Шукаємо сильного QA розробника для автоматизації UI/API тестів на нашому масштабному проєкті."
+  }
+];
+
+app.get('/api/vacancies', (req, res) => {
+  res.status(200).json({ success: true, vacancies });
+});
+
+app.post('/api/vacancies', (req, res) => {
+  const { title, category, salary, country, company, description } = req.body;
+
+  if (!title || !category || !salary) {
+    return res.status(400).json({ success: false, message: 'Заповніть обовʼязкові поля!' });
+  }
+
+  const newVacancy = {
+    id: String(vacancies.length + 1),
+    title,
+    category,
+    salary,
+    country: country || 'Країни ЄС',
+    company: company || 'Приватна компанія',
+    description: description || ''
+  };
+
+  vacancies.unshift(newVacancy);
+  res.status(201).json({ success: true, vacancy: newVacancy, message: 'Вакансію успішно опубліковано на сервері!' });
+});
+
 
 app.post('/api/register', async (req, res) => {
   const { email, password, role } = req.body;
@@ -60,7 +107,6 @@ app.post('/api/register', async (req, res) => {
   }
 });
 
-
 app.post('/api/login', (req, res) => {
   const { email, password } = req.body;
   const user = users.find(u => u.email === email);
@@ -80,7 +126,6 @@ app.post('/api/login', (req, res) => {
   });
 });
 
-
 app.post('/api/forgot-password', async (req, res) => {
   const { email } = req.body;
   const user = users.find(u => u.email === email);
@@ -93,7 +138,6 @@ app.post('/api/forgot-password', async (req, res) => {
   user.password = tempPassword;
 
   try {
-
     const response = await fetch('https://resend.com', {
       method: 'POST',
       headers: {
@@ -127,7 +171,6 @@ app.post('/api/forgot-password', async (req, res) => {
   }
 });
 
-
 app.post('/api/change-password', (req, res) => {
   const { email, oldPassword, newPassword } = req.body;
   const user = users.find(u => u.email === email);
@@ -141,7 +184,7 @@ app.post('/api/change-password', (req, res) => {
   }
 
   user.password = newPassword;
-  res.status(200).json({ success: true, message: 'Пароль успішно змінено!' });
+  res.status(200).json({ success: true, message: 'Пароль успешно изменено!' });
 });
 
 const PORT = process.env.PORT || 5000;
