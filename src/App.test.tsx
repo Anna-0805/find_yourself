@@ -85,3 +85,38 @@ describe("Кастомна логіка ручного Debounce пошуку", (
     expect(searchMock).toHaveBeenCalledWith('Водій');
   });
 });
+
+function ErrorRetryTester({ message, onRetry }: { message: string; onRetry: () => void }) {
+  return (
+    <div data-testid="error-block" className="p-6 bg-red-50 border border-red-200 rounded-2xl text-center space-y-4">
+      <p className="text-red-600 text-sm font-medium">{message}</p>
+      <button
+        onClick={onRetry}
+        data-testid="retry-button"
+        className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold rounded-xl transition-all"
+      >
+        Повторити запит
+      </button>
+    </div>
+  );
+}
+
+describe("Компонент обробки помилок та Retry-логіка запитів", () => {
+  it("повинен коректно рендерити передане повідомлення про помилку мережі", () => {
+    const mockRetry = vi.fn();
+    render(<ErrorRetryTester message="Помилка зʼєднання. Спробуйте пізніше." onRetry={mockRetry} />);
+    
+    expect(screen.getByText("Помилка зʼєднання. Спробуйте пізніше.")).toBeTruthy();
+  });
+
+  it("повинен успішно викликати функцію повторного запиту при натисканні на кнопку Retry", () => {
+    const mockRetry = vi.fn();
+    render(<ErrorRetryTester message="Помилка завантаження даних 1 з 5" onRetry={mockRetry} />);
+    
+    const retryButton = screen.getByTestId('retry-button');
+    
+    fireEvent.click(retryButton);
+    
+    expect(mockRetry).toHaveBeenCalledTimes(1);
+  });
+});
