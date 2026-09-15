@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useState, useEffect, type ReactNode } from 'react';
+import { createContext, useState, type ReactNode } from 'react';
 
-export interface User {
+interface User {
   name: string;
   email: string;
   role: 'candidate' | 'employer';
@@ -18,32 +18,35 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(() => {
-    const saved = localStorage.getItem('vv_work_user');
-    return saved ? JSON.parse(saved) : null;
-  });
-
-  useEffect(() => {
-    if (user) {
-      localStorage.setItem('vv_work_user', JSON.stringify(user));
-    } else {
-      localStorage.removeItem('vv_work_user');
+    try {
+      const saved = localStorage.getItem('vv_work_user');
+      return saved ? JSON.parse(saved) : null;
+    } catch (e) {
+      console.error("Помилка парсингу сесії користувача:", e);
+      return null;
     }
-  }, [user]);
+  });
 
   const login = (email: string, password: string, role: 'candidate' | 'employer') => {
     if (password.length < 6) {
       return false;
     }
 
-    setUser({
+    const userData: User = {
       name: role === 'employer' ? 'Роботодавець ЄС' : 'Кандидат',
       email,
       role,
-    });
+    };
+
+    setUser(userData);
+    localStorage.setItem('vv_work_user', JSON.stringify(userData));
     return true;
   };
 
-  const logout = () => setUser(null);
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem('vv_work_user'); 
+  };
 
   return (
     <AuthContext.Provider value={{ user, login, logout, isAuthenticated: !!user }}>
