@@ -3,8 +3,8 @@
 Сучасна європейська платформа для швидкого пошуку вакансій та надійних працівників у країнах ЄС. Проєкт реалізовано як високопродуктивний Full-Stack додаток із автоматизованим тестуванням, наскрізною авторизацією та динамічною синхронізацією даних у реальному часі.
 
 ## Посилання на проєкт
-* **Frontend (Production Деплой):** [https://vercel.app](https://vercel.app)
-* **Backend API (Render Web Service):** [https://find-yourself-pied.vercel.app]
+* **Frontend (Production Деплой):** [https://find-yourself-pied.vercel.app/]
+* **Backend API (Render Web Service):** [https://find-yourself-backend.onrender.com]
 * **Публічний GitHub-репозиторій:** [https://github.com/Anna-0805/find_yourself]
 
 ## Технологічний стек
