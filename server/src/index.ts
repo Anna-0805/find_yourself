@@ -24,7 +24,7 @@ app.use(cors({
 
 
 app.use('/api', vacancyRoutes);
-app.use('/api', authRoutes);
+app.use('/api/auth', authRoutes); 
 
 app.listen(PORT, () => {
   console.log(`Сервер успішно запущено на порту ${PORT}`);
