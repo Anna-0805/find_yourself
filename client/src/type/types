@@ -1,0 +1,7 @@
+import type { Vacancy } from "../mockApi";
+
+export interface ApplyModalProps {
+  vacancy: Vacancy | null;
+  isOpen: boolean;
+  onClose: () => void;
+}
