@@ -3,11 +3,12 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 
+dotenv.config();
+
 import { PORT, CLIENT_ORIGIN } from './constants';
 import vacancyRoutes from './routes/vacancy.routes';
 import authRoutes from './routes/auth.routes';
 
-dotenv.config();
 
 const app = express();
 
