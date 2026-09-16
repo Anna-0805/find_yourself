@@ -4,9 +4,9 @@ import { register, login, getMe, logout, forgotPassword, changePassword } from '
 const router = Router();
 
 router.post('/register', register);
-router.post('/auth/login', login);
-router.get('/auth/me', getMe);
-router.post('/auth/logout', logout);
+router.post('/login', login); 
+router.get('/me', getMe);
+router.post('/logout', logout);
 router.post('/forgot-password', forgotPassword);
 router.post('/change-password', changePassword);
 
