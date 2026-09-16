@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node --import tsx src/index.ts",
-    "build": "echo 'No build step required for tsx'"
+    "start": "npx tsx src/index.ts",
+    "build": "npm install"
   },
   "keywords": [],
   "author": "",
