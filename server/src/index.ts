@@ -21,7 +21,7 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-// Підключаємо роути
+
 app.use('/api', vacancyRoutes);
 app.use('/api', authRoutes);
 
