@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import type { Vacancy } from "../mockApi"
 import { API_URL } from "../services/constants"; 

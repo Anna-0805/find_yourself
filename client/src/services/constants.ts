@@ -5,7 +5,7 @@ export const API_LOGIN_URL = `${API_URL}/auth/login`;
 
 export const API_REGISTER_URL = `${API_URL}/register`;
 
-export const LOCAL_CATEGORIES = ["Все", "Будівництво", "Виробництво", "Логістика", "Готельно-ресторанна сфера", "IT", "Водії"];
+export const LOCAL_CATEGORIES = ["Все", "Будівництво", "Виробництво", "Логістика", "Готельно-ресторанна сфера", "IT", "Водії", "Test",];
 
 export const CATEGORIES = [
   { id: "building", name: "Будівництво", icon: "/architectural.svg" },
@@ -15,6 +15,7 @@ export const CATEGORIES = [
   { id: "it", name: "IT", icon: "/computer.svg" },
   { id: "drivers", name: "Водії", icon: "/car.svg" },
   { id: "others", name: "Інші", icon: "/other.png" },
+  { id: "test", name: "Test", icon: "/test.png" }
 ];
 
 export interface Category {

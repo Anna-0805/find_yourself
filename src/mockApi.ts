@@ -35,7 +35,8 @@ const MOCK_VACANCIES: Vacancy[] = [
   { id: "2", title: "Логист (Диспетчер)", category: "Логістика", partnerSlug: "eu-delivery", location: "Віддалено / Познань", salary: "1500 - 1800 €", description: "Координація маршрутів, спілкування з водіями." },
   { id: "3", title: "Арматурщик / Бетонщик", category: "Будівництво", partnerSlug: "nordic-build", location: "Швеція, Стокгольм", salary: "2800 - 3400 €", description: "Бетонування, армування, робота з кресленнями." },
   { id: "4", title: "Електри на монтаж", category: "Будівництво", partnerSlug: "nordic-build", location: "Норвегія, Осло", salary: "3000 - 3500 €", description: "Прокладка кабелей, монтаж щитового оборудования." },
-  { id: "5", title: "Повар горячого цеху", category: "Готельно-ресторанна сфера", partnerSlug: "nordic-build", location: "Німеччина, Мюнхен", salary: "1900 - 2300 €", description: "Приготування страв європейської кухні." }
+  { id: "5", title: "Повар горячого цеху", category: "Готельно-ресторанна сфера", partnerSlug: "nordic-build", location: "Німеччина, Мюнхен", salary: "1900 - 2300 €", description: "Приготування страв європейської кухні." },
+  { id: "6", title: "Test ", category: "Тест", partnerSlug: "nordic-build", location: "Німеччина, Мюнхен", salary: "1900 - 2300 €", description: "Приготування страв європейської кухні." }
 ];
 
 

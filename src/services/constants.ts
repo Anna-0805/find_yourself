@@ -1,4 +1,5 @@
-export const API_URL = 'https://find-yourself-backend.onrender.com/api';
+export const API_URL = 'http://localhost:5000/api'; 
+  /*https://find-yourself-backend.onrender.com/api'; */
 
 export const API_REGISTER_URL = `${API_URL}/register`;
 
